@@ -8,7 +8,7 @@ contract EthersAd
     uint coolDown = 1 minutes;
     string emptyString;
     Slot[10] public slots;
-    uint[10] internal highestBidders;
+    address[10] internal highestBidders;
     uint[10] internal highestBiddingBid;
     uint256 minBid = 0.1 ether;
     mapping(string => mapping(address => Listing)) internal listings;
@@ -128,18 +128,12 @@ contract EthersAd
     }
 
     // Slot Winner pays for the slot
-    function fundSlot(uint _slot, string memory _lisitng) public payable{
+    function fundSlot(uint _slot, string calldata _lisitng) public payable{
         // Send money to the smart contract
         require(slots[_slot].status == Status.funding, "Not ready to fund");
         slots[_slot].startTime = block.timestamp;
         slots[_slot].endTime = slots[_slot].startTime + slots[_slot].duration;
         slots[_slot].coolDownnTime = slots[_slot].endTime + coolDown;
 
-    }
-
-    function payMe(address payable _to) public payable returns (uint) {
-        require(msg.value >= minBid);
-        (bool sent, bytes memory data) = _to.call{value: msg.value}("");
-         require(sent, "Failed to send Ether");
     }
 }
